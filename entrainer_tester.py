@@ -3,7 +3,7 @@ import sys
 
 from DecisionTree import DecisionTree
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
-from NeuralNet import NeuralNet
+from OldNeuralNet import OldNeuralNet
 from scikit_classifiers import test_scikit_dt_abalone, test_scikit_dt_iris, test_scikit_dt_wine, test_scikit_nn_abalone, test_scikit_nn_iris, test_scikit_nn_wine
 
 
@@ -69,21 +69,21 @@ dt_iris = DecisionTree(max_depth=DECISION_TREE_MAX_DEPTHS[IRIS])
 dt_wine = DecisionTree(max_depth=DECISION_TREE_MAX_DEPTHS[WINE])
 
 # Classifiers - Neural Networks
-nn_abalone = NeuralNet(input_size=ABALONE_FEATURES,
-                       hidden_size=NEURAL_NET_HIDDEN_SIZES[ABALONE],
-                       output_size=NEURAL_NET_OUTPUT_SIZES[ABALONE],
-                       learning_rate=NEURAL_NET_LEARNING_RATES[ABALONE],
-                       epochs=NEURAL_NET_EPOCHS[ABALONE])
-nn_iris = NeuralNet(input_size=IRIS_FEATURES,
-                    hidden_size=NEURAL_NET_HIDDEN_SIZES[IRIS],
-                    output_size=NEURAL_NET_OUTPUT_SIZES[IRIS],
-                    learning_rate=NEURAL_NET_LEARNING_RATES[IRIS],
-                    epochs=NEURAL_NET_EPOCHS[IRIS])
-nn_wine = NeuralNet(input_size=WINE_FEATURES,
-                    hidden_size=NEURAL_NET_HIDDEN_SIZES[WINE],
-                    output_size=NEURAL_NET_OUTPUT_SIZES[WINE],
-                    learning_rate=NEURAL_NET_LEARNING_RATES[WINE],
-                    epochs=NEURAL_NET_EPOCHS[WINE])
+nn_abalone = OldNeuralNet(input_size=ABALONE_FEATURES,
+                          hidden_size=NEURAL_NET_HIDDEN_SIZES[ABALONE],
+                          output_size=NEURAL_NET_OUTPUT_SIZES[ABALONE],
+                          learning_rate=NEURAL_NET_LEARNING_RATES[ABALONE],
+                          epochs=NEURAL_NET_EPOCHS[ABALONE])
+nn_iris = OldNeuralNet(input_size=IRIS_FEATURES,
+                       hidden_size=NEURAL_NET_HIDDEN_SIZES[IRIS],
+                       output_size=NEURAL_NET_OUTPUT_SIZES[IRIS],
+                       learning_rate=NEURAL_NET_LEARNING_RATES[IRIS],
+                       epochs=NEURAL_NET_EPOCHS[IRIS])
+nn_wine = OldNeuralNet(input_size=WINE_FEATURES,
+                       hidden_size=NEURAL_NET_HIDDEN_SIZES[WINE],
+                       output_size=NEURAL_NET_OUTPUT_SIZES[WINE],
+                       learning_rate=NEURAL_NET_LEARNING_RATES[WINE],
+                       epochs=NEURAL_NET_EPOCHS[WINE])
 
 
 ############################

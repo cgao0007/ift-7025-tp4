@@ -7,3 +7,6 @@ datasets/
 # Testing stuff :D
 tests/*
 *.ipynb
+
+# PyCharm
+.idea
