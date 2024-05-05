@@ -3,9 +3,11 @@ import sys
 
 from DecisionTree import DecisionTree
 from NeuralNet import NeuralNet
+from hparam_search import compute_mean_errors_for_hidden_layer_size
 from learning_curve import test_learning_curve
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
 from pruning import test_pruning
+from matplotlib import pyplot as plt
 from scikit_classifiers import test_scikit_dt_abalone, test_scikit_dt_iris, test_scikit_dt_wine, test_scikit_nn_abalone, test_scikit_nn_iris, test_scikit_nn_wine
 
 
@@ -34,12 +36,17 @@ WINE_FEATURES = 11
 # Train Ratio
 TRAIN_RATIO = 0.7
 
+# Values for hparam search
+HIDDEN_LAYER_SIZES = [5, 50, 100, 250, 500]
+NUMBERS_OF_HIDDEN_LAYERS = range(1, 6)
+
 # Tests to run
 TEST_DECISION_TREE = False
-TEST_NEURAL_NET = True
+TEST_NEURAL_NET = False
 LEARNING_CURVE = False
 PRUNING = False
-NEURAL_NET_HPARAM_SEARCH = False
+NEURAL_NET_HIDDEN_SIZE_SEARCH = True
+NEURAL_NET_NUM_LAYERS_SEARCH = False
 
 #########################################################
 # 1 - Initialiser votre classifieur avec ses paramètres #
@@ -208,8 +215,23 @@ def main():
     if LEARNING_CURVE:
         test_learning_curve()
 
-
     # Neural Net hparam search
+    if NEURAL_NET_HIDDEN_SIZE_SEARCH:
+        print("Iris hidden size search:")
+        iris_mean_errors = compute_mean_errors_for_hidden_layer_size(iris_train, iris_train_labels, HIDDEN_LAYER_SIZES)
+        print("Wine hidden size search:")
+        wine_mean_errors = compute_mean_errors_for_hidden_layer_size(wine_train, wine_train_labels, HIDDEN_LAYER_SIZES)
+        print("Abalone hidden size search:")
+        abalone_mean_errors = compute_mean_errors_for_hidden_layer_size(abalone_train_one_hot, abalone_train_labels_one_hot, HIDDEN_LAYER_SIZES)
+
+        plt.xticks(HIDDEN_LAYER_SIZES)
+        plt.plot(HIDDEN_LAYER_SIZES, iris_mean_errors, label="Iris")
+        plt.plot(HIDDEN_LAYER_SIZES, wine_mean_errors, label="Wine")
+        plt.plot(HIDDEN_LAYER_SIZES, abalone_mean_errors, label="Abalone")
+        plt.xlabel("Neurones de la couche cachée")
+        plt.ylabel("Erreur en validation croisée à 10 plis")
+        plt.legend()
+        plt.show()
 
 if __name__ == '__main__':
     main()
