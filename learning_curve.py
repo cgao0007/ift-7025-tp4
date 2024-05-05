@@ -97,7 +97,7 @@ def show_learning_curve(dataset, pruning, print_results=False):
 
         # Print results if needed
         if print_results:
-            print(f'Got {accuracy:.2f} accuracy for {percentage}% ({num_elements} samples).')
+            print(f'Got {accuracy * 100:.2f}% accuracy for {percentage}% ({num_elements} samples).')
 
     # Extract percentage and accuracy from the list of tuples
     x = [item[0] for item in accuracies]
@@ -106,7 +106,7 @@ def show_learning_curve(dataset, pruning, print_results=False):
     # Plotting
     plt.figure(figsize=(8, 6))
     plt.plot(x, y, color='blue', label='Accuracy')
-    title = f'Learning curve of decision tree on {dataset}'
+    title = f'Learning curve of decision tree on {dataset} dataset'
     if pruning:
         title += f' with pruning (p-value threshold: {DECISION_TREE_P_VALUES[dataset]})'
     else:
@@ -118,12 +118,13 @@ def show_learning_curve(dataset, pruning, print_results=False):
     plt.legend()
     plt.show()
 
-def main():
+def test_learning_curve():
     datasets = [ABALONE, IRIS, WINE]
     pruning = [False, True]
+    print_results = True
     for dataset in datasets:
         for p in pruning:
-            show_learning_curve(dataset, p, print_results=True)
+            show_learning_curve(dataset, p, print_results=print_results)
 
 if __name__ == '__main__':
-    main()
+    test_learning_curve()

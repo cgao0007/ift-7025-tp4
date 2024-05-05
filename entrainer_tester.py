@@ -2,8 +2,10 @@ import numpy as np
 import sys
 
 from DecisionTree import DecisionTree
+from learning_curve import test_learning_curve
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
 from OldNeuralNet import OldNeuralNet
+from pruning import test_pruning
 from scikit_classifiers import test_scikit_dt_abalone, test_scikit_dt_iris, test_scikit_dt_wine, test_scikit_nn_abalone, test_scikit_nn_iris, test_scikit_nn_wine
 
 
@@ -28,8 +30,12 @@ ABALONE_FEATURES = 8
 IRIS_FEATURES = 4
 WINE_FEATURES = 11
 
+# Train Ratio
 TRAIN_RATIO = 0.7
 
+# Learning Curve & Pruning Tests
+LEARNING_CURVE = False
+PRUNING = False
 
 #########################################################
 # 1 - Initialiser votre classifieur avec ses paramètres #
@@ -181,6 +187,14 @@ def main():
     test_scikit_nn_iris()
     test_scikit_nn_wine()
     test_scikit_nn_abalone()
+
+    # Pruning
+    if PRUNING:
+        test_pruning()
+    
+    # Learning Curve
+    if LEARNING_CURVE:
+        test_learning_curve()
 
 
 if __name__ == '__main__':

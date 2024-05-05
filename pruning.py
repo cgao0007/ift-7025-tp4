@@ -92,7 +92,7 @@ def test_classifier(dataset, pruning):
     cm, accuracy, precision, recall, f1 = classifier.evaluate(test, test_labels)
     print_results(cm, accuracy, precision, recall, f1)
 
-def main():
+def test_pruning():
     datasets = [ABALONE, IRIS, WINE]
     pruning = [False, True]
     for dataset in datasets:
@@ -100,4 +100,4 @@ def main():
             test_classifier(dataset, p)
 
 if __name__ == '__main__':
-    main()
+    test_pruning()
