@@ -12,6 +12,6 @@ Fichiers nécessaires:
 
 Répartition des tâches de travail entre les membres d'équipe :
 - Arbres de décision: Christine Gao
-- Réseaux de neurones : Christine Gao
+- Réseaux de neurones : Félix Dupré-Ouellet
 - Fichiers load_datasets.py et entrainer_tester.py : contribution par les 2 membres
 - Rapport : contribution par les 2 membres
