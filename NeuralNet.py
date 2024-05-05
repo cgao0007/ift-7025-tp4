@@ -44,29 +44,38 @@ class NeuralNet:  # nom de la class à changer
         les expliquer en commentaire
 
         """
-        x = train[0]
-        y = self.__convert_label_to_one_hot(train_labels[0])
-
         # --- Calcul du gradient ---
 
-        # Ajout d'une entrée à 1 pour le biais
-        in_h = np.concatenate([np.array([1]), x])
-        out = np.matmul(self.hidden_layer_weights, in_h)
-        o_h = self.__sigmoid(out)
+        total_output_layer_gradient = np.zeros(self.output_layer_weights.shape)
+        total_hidden_layer_gradient = np.zeros(self.hidden_layer_weights.shape)
 
-        in_k = np.concatenate([np.array([1]), o_h])
-        out = np.matmul(self.output_layer_weights, in_k)
-        o_k = self.__sigmoid(out)
+        batch_size = len(train)
 
-        d_k = o_k * (1 - o_k) * (y - o_k)
+        for i in range(batch_size):
+            x = train[i]
+            y = self.__convert_label_to_one_hot(train_labels[i])
 
-        # On exclut le biais de la couche de sortie puisqu'il n'affecte pas la couche cachée
-        d_h = o_h * (1 - o_h) * np.matmul(d_k, self.output_layer_weights[:, 1:])
+            # Ajout d'une entrée à 1 pour le biais
+            in_h = np.concatenate([np.array([1]), x])
+            out = np.matmul(self.hidden_layer_weights, in_h)
+            o_h = self.__sigmoid(out)
 
-        # --- Mise à jour des poids et biais ---
+            in_k = np.concatenate([np.array([1]), o_h])
+            out = np.matmul(self.output_layer_weights, in_k)
+            o_k = self.__sigmoid(out)
 
-        self.output_layer_weights += self.learning_rate * np.matmul(np.expand_dims(d_k, axis=1), np.expand_dims(in_k, axis=0))
-        self.hidden_layer_weights += self.learning_rate * np.matmul(np.expand_dims(d_h, axis=1), np.expand_dims(in_h, axis=0))
+            d_k = o_k * (1 - o_k) * (y - o_k)
+
+            # On exclut le biais de la couche de sortie puisqu'il n'affecte pas la couche cachée
+            d_h = o_h * (1 - o_h) * np.matmul(d_k, self.output_layer_weights[:, 1:])
+
+            # --- Mise à jour des poids et biais ---
+
+            total_output_layer_gradient += np.matmul(np.expand_dims(d_k, axis=1), np.expand_dims(in_k, axis=0))
+            total_hidden_layer_gradient += np.matmul(np.expand_dims(d_h, axis=1), np.expand_dims(in_h, axis=0))
+
+        self.output_layer_weights += self.learning_rate * (total_output_layer_gradient / batch_size)
+        self.hidden_layer_weights += self.learning_rate * (total_hidden_layer_gradient / batch_size)
 
         print("allo")
 
