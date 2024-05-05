@@ -37,8 +37,12 @@ dt_abalone_pruning = DecisionTree(max_depth=DECISION_TREE_MAX_DEPTHS[ABALONE], p
 dt_iris_pruning = DecisionTree(max_depth=DECISION_TREE_MAX_DEPTHS[IRIS], pruning=True, p_value_threshold=DECISION_TREE_P_VALUES[IRIS])
 dt_wine_pruning = DecisionTree(max_depth=DECISION_TREE_MAX_DEPTHS[WINE], pruning=True, p_value_threshold=DECISION_TREE_P_VALUES[WINE])
 
-# Percentages to use for learing curve
-percentages = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+def print_results(cm, accuracy, precision, recall, f1):
+    print(f'Confusion Matrix:\n{cm}')
+    print(f'Accuracy: {accuracy * 100:.5f}%')
+    print(f'Precision: {precision * 100:.5f}%')
+    print(f'Recall: {recall * 100:.5f}%')
+    print(f'F1 Score: {f1 * 100:.5f}%')
 
 # Get the classifer
 def get_classifier(dataset, pruning):
@@ -72,58 +76,28 @@ def get_data(dataset):
     else:
         raise ValueError('Error: invalid dataset')
 
-# Compute the learning curve
-def show_learning_curve(dataset, pruning, print_results=False):
-    # Store accuracies
-    accuracies = []
-
+# Test the classifier
+def test_classifier(dataset, pruning):
     # Get the classifier & the data
     classifier = get_classifier(dataset, pruning)
     train, train_labels, test, test_labels = get_data(dataset)
+    print(f'\nDecision Tree - {dataset}:')
+    print(f'Max Depth: {classifier.max_depth}')
+    print(f'Pruning: {"enabled" if classifier.pruning else "disabled"}{"" if not classifier.pruning else f" (p-value threshold: {classifier.p_value_threshold})"}')
 
-    # Compute the accuracy for each percentage
-    for percentage in percentages:
-        # Sample the training set
-        num_elements = int(len(train) * percentage / 100)
-        train_sample = train[:num_elements]
-        train_labels_sample = train_labels[:num_elements]
+    # Train
+    classifier.train(train, train_labels)
 
-        # Train
-        classifier.train(train_sample, train_labels_sample)
-
-        # Evaluate and store the accuracy
-        _, accuracy, _, _, _ = classifier.evaluate(test, test_labels)
-        accuracies.append((percentage, accuracy))
-
-        # Print results if needed
-        if print_results:
-            print(f'Got {accuracy:.2f} accuracy for {percentage}% ({num_elements} samples).')
-
-    # Extract percentage and accuracy from the list of tuples
-    x = [item[0] for item in accuracies]
-    y = [item[1] for item in accuracies]
-
-    # Plotting
-    plt.figure(figsize=(8, 6))
-    plt.plot(x, y, color='blue', label='Accuracy')
-    title = f'Learning curve of decision tree on {dataset}'
-    if pruning:
-        title += f' with pruning (p-value threshold: {DECISION_TREE_P_VALUES[dataset]})'
-    else:
-        title += ' without pruning'
-    plt.title(title)
-    plt.xlabel('Percentage of the training set')
-    plt.ylabel('Accuracy of the predictions')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+    # Evaluate and store the accuracy
+    cm, accuracy, precision, recall, f1 = classifier.evaluate(test, test_labels)
+    print_results(cm, accuracy, precision, recall, f1)
 
 def main():
     datasets = [ABALONE, IRIS, WINE]
     pruning = [False, True]
     for dataset in datasets:
         for p in pruning:
-            show_learning_curve(dataset, p, print_results=True)
+            test_classifier(dataset, p)
 
 if __name__ == '__main__':
     main()
