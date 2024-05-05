@@ -246,7 +246,7 @@ def load_abalone_dataset(train_ratio):
     if data is None:
         raise IOError(f'Failed to read the abalone dataset file: {ABALONE_DATASET}')
 
-    conversion_labels = {'M': 0, 'F' : 1, 'I' : 2}
+    sex_to_number = {'M': 0, 'F' : 1, 'I' : 2}
     
     # TODO : le code ici pour lire le dataset
     random.shuffle(data)
@@ -257,14 +257,19 @@ def load_abalone_dataset(train_ratio):
     
     # Helper functions
     def row_to_features(row):
-        features = row.split(',')[1:]
-        for i, feature in enumerate(features):
+        features = row.split(',')[:-1]
+
+        sex_number = sex_to_number[features[0]]
+        features = [sex_number] + features[1:]
+
+        for i, feature in enumerate(features[1:]):
             features[i] = float(feature)
+
         return features
     
     def row_to_label(row):
-        label = row.split(',')[0]
-        return conversion_labels[label]
+        label = row.split(',')[-1]
+        return int(float(label))
     
     # Train
     train_list = []
