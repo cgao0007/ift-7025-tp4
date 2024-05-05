@@ -16,19 +16,20 @@ import numpy as np
 
 class NeuralNet:  # nom de la class à changer
 
-    def __init__(self, input_size, output_size, hidden_size):
+    def __init__(self, input_size, output_size, hidden_layer_size, learning_rate):
         """
         C'est un Initializer.
         Vous pouvez passer d'autre paramètres au besoin,
         c'est à vous d'utiliser vos propres notations
         """
-        self.n_inputs = input_size
-        self.n_outputs = output_size
-        self.hidden_layer_size = hidden_size
+        self.input_size = input_size
+        self.output_size = output_size
+        self.hidden_layer_size = hidden_layer_size
+        self.learning_rate = learning_rate
 
         # Le biais est le poids à l'index 0 pour chaque neurone
-        self.input_weights = np.empty((hidden_size, input_size + 1))
-        self.output_weights = np.empty((output_size, hidden_size + 1))
+        self.hidden_layer_weights = np.empty((hidden_layer_size, input_size + 1))
+        self.output_layer_weights = np.empty((output_size, hidden_layer_size + 1))
 
     def train(self, train, train_labels):  # vous pouvez rajouter d'autres attributs au besoin
         """
@@ -43,19 +44,45 @@ class NeuralNet:  # nom de la class à changer
         les expliquer en commentaire
 
         """
-        # En supposant qu'on a un batch size équivalent à la taille du jeu de données
-        outputs = [self.__forward(x) for x in train]
-        losses = [self.__compute_loss(outputs[i], train_labels[i]) for i in range(len(train_labels))]
+        x = train[0]
+        y = self.__convert_label_to_one_hot(train_labels[0])
 
+        # --- Calcul du gradient ---
 
-        pass
+        # Ajout d'une entrée à 1 pour le biais
+        in_h = np.concatenate([np.array([1]), x])
+        out = np.matmul(self.hidden_layer_weights, in_h)
+        o_h = self.__sigmoid(out)
+
+        in_k = np.concatenate([np.array([1]), o_h])
+        out = np.matmul(self.output_layer_weights, in_k)
+        o_k = self.__sigmoid(out)
+
+        d_k = o_k * (1 - o_k) * (y - o_k)
+
+        # On exclut le biais de la couche de sortie puisqu'il n'affecte pas la couche cachée
+        d_h = o_h * (1 - o_h) * np.matmul(d_k, self.output_layer_weights[:, 1:])
+
+        # --- Mise à jour des poids et biais ---
+
+        self.output_layer_weights += self.learning_rate * np.matmul(np.expand_dims(d_k, axis=1), np.expand_dims(in_k, axis=0))
+        self.hidden_layer_weights += self.learning_rate * np.matmul(np.expand_dims(d_h, axis=1), np.expand_dims(in_h, axis=0))
+
+        print("allo")
 
     def predict(self, x):
         """
         Prédire la classe d'un exemple x donné en entrée
         exemple est de taille 1xm
         """
-        out = self.__forward(x)
+        out = np.concatenate([np.array([1]), x])
+        out = np.matmul(self.hidden_layer_weights, out)
+        out = self.__sigmoid(out)
+
+        out = np.concatenate([np.array([1]), out])
+        out = np.matmul(self.output_layer_weights, out)
+        out = self.__sigmoid(out)
+
         return np.argmax(out)
 
     def evaluate(self, X, y):
@@ -70,25 +97,11 @@ class NeuralNet:  # nom de la class à changer
         vous pouvez rajouter d'autres arguments, il suffit juste de
         les expliquer en commentaire
         """
+
     pass
 
-    def __forward(self, x):
-        out = np.concatenate([np.array([1]), x])
-        out = np.matmul(self.input_weights, out)
-        out = self.__sigmoid(out)
-
-        out = np.concatenate([np.array([1]), out])
-        out = np.matmul(self.output_weights, out)
-        out = self.__sigmoid(out)
-
-        return out
-
-    # MSE utilisée pour simplifier le calcul du gradient
-    def __compute_loss(self, output, label):
-        pass
-
     def __convert_label_to_one_hot(self, label):
-        one_hot = np.zeros(self.output_weights)
+        one_hot = np.zeros(self.output_size)
         one_hot[label] = 1
 
         return one_hot
