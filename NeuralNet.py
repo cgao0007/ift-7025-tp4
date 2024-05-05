@@ -27,9 +27,9 @@ class NeuralNet:  # nom de la class à changer
         self.hidden_layer_size = hidden_layer_size
         self.learning_rate = learning_rate
 
-        # Le biais est le poids à l'index 0 pour chaque neurone
-        self.hidden_layer_weights = np.empty((hidden_layer_size, input_size + 1))
-        self.output_layer_weights = np.empty((output_size, hidden_layer_size + 1))
+        # Initialisation de Xavier (le biais est le poids à l'index 0 pour chaque neurone)
+        self.hidden_layer_weights = np.random.standard_normal((hidden_layer_size, input_size + 1)) / np.sqrt(input_size + 1)
+        self.output_layer_weights = np.random.standard_normal((output_size, hidden_layer_size + 1)) / np.sqrt(hidden_layer_size + 1)
 
     def train(self, train, train_labels):  # vous pouvez rajouter d'autres attributs au besoin
         """
