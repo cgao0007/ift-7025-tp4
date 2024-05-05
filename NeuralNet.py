@@ -14,7 +14,7 @@ import numpy as np
 # DecisionTree pour l'arbre de décision
 # NeuralNet pour le réseau de neurones
 
-class NeuralNet:  # nom de la class à changer
+class NeuralNet:
 
     def __init__(self, input_size, output_size, hidden_layer_size, learning_rate, batch_size=None):
         """
