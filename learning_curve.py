@@ -118,7 +118,7 @@ def show_learning_curve(dataset, pruning, print_results=False):
     plt.legend()
     plt.show()
 
-def main():
+def test_learning_curve():
     datasets = [ABALONE, IRIS, WINE]
     pruning = [False, True]
     print_results = True
@@ -127,4 +127,4 @@ def main():
             show_learning_curve(dataset, p, print_results=print_results)
 
 if __name__ == '__main__':
-    main()
+    test_learning_curve()
