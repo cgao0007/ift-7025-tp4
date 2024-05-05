@@ -16,7 +16,7 @@ import numpy as np
 
 class NeuralNet:  # nom de la class à changer
 
-    def __init__(self, input_size, output_size, hidden_layer_size, learning_rate):
+    def __init__(self, input_size, output_size, hidden_layer_size, learning_rate, batch_size=None):
         """
         C'est un Initializer.
         Vous pouvez passer d'autre paramètres au besoin,
@@ -26,6 +26,7 @@ class NeuralNet:  # nom de la class à changer
         self.output_size = output_size
         self.hidden_layer_size = hidden_layer_size
         self.learning_rate = learning_rate
+        self.batch_size = batch_size
 
         # Initialisation de Xavier (le biais est le poids à l'index 0 pour chaque neurone)
         self.hidden_layer_weights = np.random.standard_normal((hidden_layer_size, input_size + 1)) / np.sqrt(input_size + 1)
@@ -46,8 +47,24 @@ class NeuralNet:  # nom de la class à changer
         les expliquer en commentaire
 
         """
+        concatenated_train_data = np.concatenate([train, np.expand_dims(train_labels, axis=1)], axis=1)
+
+        # On met les données d'entraînement dans un ordre aléatoire pour éviter de ne voir qu'une classe à la fois
+        np.random.shuffle(concatenated_train_data)
+
+        if self.batch_size is None:
+            train_batches = [concatenated_train_data]
+        else:
+            approximate_number_of_batches = len(train) // self.batch_size
+            train_batches = np.array_split(concatenated_train_data, approximate_number_of_batches)
+
         for i in range(epochs):
-            self.__train_for_epoch(train, train_labels)
+            # On mélange les batches pour avoir un ordre différent à chaque itération
+            np.random.shuffle(train_batches)
+
+            for j in range(len(train_batches)):
+                batch = train_batches[j]
+                self.__train_with_batch(batch[:, :-1], batch[:, -1].astype(int))
 
     def predict(self, x):
         """
@@ -110,38 +127,39 @@ class NeuralNet:  # nom de la class à changer
 
         return confusion_matrix, accuracy, avg_precision, avg_recall, avg_f1
 
-    def __train_for_epoch(self, train, train_labels):
+    def __train_with_batch(self, train, train_labels):
         total_output_layer_gradient = np.zeros(self.output_layer_weights.shape)
         total_hidden_layer_gradient = np.zeros(self.hidden_layer_weights.shape)
-        batch_size = len(train)
+        size_of_current_batch = len(train)
 
-        for i in range(batch_size):
+        for i in range(size_of_current_batch):
             x = train[i]
             y = self.__convert_label_to_one_hot(train_labels[i])
 
             # --- Calcul du gradient ---
 
-            # Ajout d'une entrée à 1 pour le biais
+            # Ajout d'une entrée à 1 pour multiplier le biais
             in_h = np.concatenate([np.array([1]), x])
             out = np.matmul(self.hidden_layer_weights, in_h)
             o_h = self.__sigmoid(out)
 
-            # Ajout d'une entrée à 1 pour le biais
+            # Ajout d'une entrée à 1 pour multiplier le biais
             in_k = np.concatenate([np.array([1]), o_h])
             out = np.matmul(self.output_layer_weights, in_k)
             o_k = self.__sigmoid(out)
 
             d_k = o_k * (1 - o_k) * (y - o_k)
-
-            # On exclut le biais de la couche de sortie puisqu'il n'affecte pas la couche cachée
             d_h = o_h * (1 - o_h) * np.matmul(d_k, self.output_layer_weights[:, 1:])
 
+            # Ajout des gradients de chaque poids
             total_output_layer_gradient += np.matmul(np.expand_dims(d_k, axis=1), np.expand_dims(in_k, axis=0))
             total_hidden_layer_gradient += np.matmul(np.expand_dims(d_h, axis=1), np.expand_dims(in_h, axis=0))
 
         # --- Mise à jour des poids et biais ---
-        self.output_layer_weights += self.learning_rate * (total_output_layer_gradient / batch_size)
-        self.hidden_layer_weights += self.learning_rate * (total_hidden_layer_gradient / batch_size)
+
+        # Pour chaque poids, on utilise le gradient moyen sur toute la batch
+        self.output_layer_weights += self.learning_rate * (total_output_layer_gradient / size_of_current_batch)
+        self.hidden_layer_weights += self.learning_rate * (total_hidden_layer_gradient / size_of_current_batch)
 
     def __convert_label_to_one_hot(self, label):
         one_hot = np.zeros(self.output_size)
