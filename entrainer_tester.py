@@ -3,7 +3,7 @@ import sys
 
 from DecisionTree import DecisionTree
 from NeuralNet import NeuralNet
-from hparam_search import compute_mean_errors_for_hidden_layer_size
+from hparam_search import compute_mean_errors_for_hidden_layer_size, compute_mean_errors_for_nums_layers
 from learning_curve import test_learning_curve
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
 from pruning import test_pruning
@@ -45,8 +45,8 @@ TEST_DECISION_TREE = False
 TEST_NEURAL_NET = False
 LEARNING_CURVE = False
 PRUNING = False
-NEURAL_NET_HIDDEN_SIZE_SEARCH = True
-NEURAL_NET_NUM_LAYERS_SEARCH = False
+NEURAL_NET_HIDDEN_SIZE_SEARCH = False
+NEURAL_NET_NUM_LAYERS_SEARCH = True
 
 #########################################################
 # 1 - Initialiser votre classifieur avec ses paramètres #
@@ -83,6 +83,11 @@ NEURAL_NET_OUTPUT_SIZES = {
     ABALONE: 3,
     IRIS: 3,
     WINE: 2,
+}
+LAYER_SIZES_FOUND_BY_SEARCH = {
+    ABALONE: 50,
+    IRIS: 50,
+    WINE: 100
 }
 
 # Classifiers - Decision Trees
@@ -215,7 +220,7 @@ def main():
     if LEARNING_CURVE:
         test_learning_curve()
 
-    # Neural Net hparam search
+    # Neural Net hidden size hparam search
     if NEURAL_NET_HIDDEN_SIZE_SEARCH:
         print("Iris hidden size search:")
         iris_mean_errors = compute_mean_errors_for_hidden_layer_size(iris_train, iris_train_labels, HIDDEN_LAYER_SIZES)
@@ -232,6 +237,25 @@ def main():
         plt.ylabel("Erreur en validation croisée à 10 plis")
         plt.legend()
         plt.show()
+
+    # Neural Net number of layers hparam search
+    if NEURAL_NET_NUM_LAYERS_SEARCH:
+        print("Iris num layers search:")
+        iris_mean_errors = compute_mean_errors_for_nums_layers(iris_train, iris_train_labels, NUMBERS_OF_HIDDEN_LAYERS, LAYER_SIZES_FOUND_BY_SEARCH[IRIS])
+        print("Wine num layers search:")
+        wine_mean_errors = compute_mean_errors_for_nums_layers(wine_train, wine_train_labels, NUMBERS_OF_HIDDEN_LAYERS, LAYER_SIZES_FOUND_BY_SEARCH[WINE])
+        print("Abalone num layers search:")
+        abalone_mean_errors = compute_mean_errors_for_nums_layers(abalone_train_one_hot, abalone_train_labels_one_hot, NUMBERS_OF_HIDDEN_LAYERS, LAYER_SIZES_FOUND_BY_SEARCH[ABALONE])
+
+        plt.xticks(NUMBERS_OF_HIDDEN_LAYERS)
+        plt.plot(NUMBERS_OF_HIDDEN_LAYERS, iris_mean_errors, label="Iris")
+        plt.plot(NUMBERS_OF_HIDDEN_LAYERS, wine_mean_errors, label="Wine")
+        plt.plot(NUMBERS_OF_HIDDEN_LAYERS, abalone_mean_errors, label="Abalone")
+        plt.xlabel("Nombre de couches")
+        plt.ylabel("Erreur en validation croisée à 10 plis")
+        plt.legend()
+        plt.show()
+
 
 if __name__ == '__main__':
     main()
