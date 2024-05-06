@@ -8,8 +8,9 @@ from learning_curve import test_learning_curve
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
 from pruning import test_pruning
 from matplotlib import pyplot as plt
-from scikit_classifiers import test_scikit_dt_abalone, test_scikit_dt_iris, test_scikit_dt_wine, test_scikit_nn_abalone, test_scikit_nn_iris, test_scikit_nn_wine
-
+from scikit_classifiers import test_scikit_dt_abalone, test_scikit_dt_iris, test_scikit_dt_wine, test_scikit_nn_abalone, \
+    test_scikit_nn_iris, test_scikit_nn_wine, test_scikit_knn_iris, test_scikit_naive_bayes_iris, test_scikit_knn_wine, \
+    test_scikit_naive_bayes_wine, test_scikit_knn_abalone, test_scikit_naive_bayes_abalone
 
 """
 C'est le fichier main duquel nous allons tout lancer
@@ -47,8 +48,8 @@ LEARNING_CURVE = False
 PRUNING = False
 NEURAL_NET_HIDDEN_SIZE_SEARCH = False
 NEURAL_NET_NUM_LAYERS_SEARCH = False
-TEST_OPTIMAL_NEURAL_NET = True
-TEST_ALL_CLASSIFIERS = False
+TEST_OPTIMAL_NEURAL_NET = False
+TEST_ALL_CLASSIFIERS = True
 
 #########################################################
 # 1 - Initialiser votre classifieur avec ses paramètres #
@@ -95,6 +96,12 @@ NUM_LAYERS_FOUND_BY_SEARCH = {
     ABALONE: 1,
     IRIS: 1,
     WINE: 1
+}
+# Résultats de K obtenus au TP3
+NUM_NEIGHBORS_FOR_KNN = {
+    ABALONE: 20,
+    IRIS: 5,
+    WINE: 10
 }
 
 # Classifiers - Decision Trees
@@ -263,13 +270,21 @@ def main():
         test_scikit_nn_wine(NUM_LAYERS_FOUND_BY_SEARCH[WINE], LAYER_SIZES_FOUND_BY_SEARCH[WINE])
         test_scikit_nn_abalone(NUM_LAYERS_FOUND_BY_SEARCH[ABALONE], LAYER_SIZES_FOUND_BY_SEARCH[ABALONE])
 
-    # Scikit Classifiers
-    # test_scikit_dt_iris()
-    # test_scikit_dt_wine()
-    # test_scikit_dt_abalone()
-    # test_scikit_nn_iris()
-    # test_scikit_nn_wine()
-    # test_scikit_nn_abalone()
+    if TEST_ALL_CLASSIFIERS:
+        test_scikit_dt_iris()
+        test_scikit_nn_iris(NUM_LAYERS_FOUND_BY_SEARCH[IRIS], LAYER_SIZES_FOUND_BY_SEARCH[IRIS])
+        test_scikit_knn_iris(NUM_NEIGHBORS_FOR_KNN[IRIS])
+        test_scikit_naive_bayes_iris()
+
+        test_scikit_dt_wine()
+        test_scikit_nn_wine(NUM_LAYERS_FOUND_BY_SEARCH[WINE], LAYER_SIZES_FOUND_BY_SEARCH[WINE])
+        test_scikit_knn_wine(NUM_NEIGHBORS_FOR_KNN[WINE])
+        test_scikit_naive_bayes_wine()
+
+        test_scikit_dt_abalone()
+        test_scikit_nn_abalone(NUM_LAYERS_FOUND_BY_SEARCH[ABALONE], LAYER_SIZES_FOUND_BY_SEARCH[ABALONE])
+        test_scikit_knn_abalone(NUM_NEIGHBORS_FOR_KNN[ABALONE])
+        test_scikit_naive_bayes_abalone()
 
 
 if __name__ == '__main__':
