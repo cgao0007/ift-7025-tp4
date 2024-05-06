@@ -26,5 +26,5 @@ Pour voir les courbes d'apprentissage, run le fichier `learning_curve.py`, ou ch
 
 Pour voir l'élagage, run le fichier `pruning.py`, ou changer le bool `PRUNING` à `True` dans le fichier `entrainer_tester.py` (section `0 - Global Variables`).
 
-Pour voir les courbes de recherche des hyperparamètres changer `NEURAL_NET_HIDDEN_SIZE_SEARCH` ou
+Pour voir les courbes de recherche des hyperparamètres, changer `NEURAL_NET_HIDDEN_SIZE_SEARCH` ou
 `NEURAL_NET_NUM_LAYERS_SEARCH` à `True` selon le cas.
