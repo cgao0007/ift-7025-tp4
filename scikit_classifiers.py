@@ -5,6 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 from load_datasets import load_abalone_dataset, load_iris_dataset, load_wine_dataset
 
 ABALONE = 'abalone'
+ABALONE_ONE_HOT = 'abalone one hot'
 IRIS = 'iris'
 WINE = 'wine'
 TRAIN_RATIO = 0.7
@@ -12,6 +13,7 @@ TRAIN_RATIO = 0.7
 iris_train, iris_train_labels, iris_test, iris_test_labels = load_iris_dataset(TRAIN_RATIO)
 wine_train, wine_train_labels, wine_test, wine_test_labels = load_wine_dataset(TRAIN_RATIO)
 abalone_train, abalone_train_labels, abalone_test, abalone_test_labels = load_abalone_dataset(TRAIN_RATIO)
+abalone_train_one_hot, abalone_train_labels_one_hot, abalone_test_one_hot, abalone_test_labels_one_hot = load_abalone_dataset(TRAIN_RATIO, one_hot_encoding=True)
 
 def print_results(cm, accuracy, precision, recall, f1):
     print(f'Confusion Matrix:\n{cm}')
@@ -28,6 +30,8 @@ def show_scikit_results(dataset, y_pred):
         test_labels = wine_test_labels
     elif dataset == ABALONE:
         test_labels = abalone_test_labels
+    elif dataset == ABALONE_ONE_HOT:
+        test_labels = abalone_test_labels_one_hot
     else:
         raise ValueError('Error: invalid dataset')
     
@@ -49,10 +53,14 @@ def test_scikit_dt_iris():
     y_pred = clf.predict(iris_test)
     show_scikit_results(IRIS, y_pred)
 
-def test_scikit_nn_iris():
+def test_scikit_nn_iris(num_layers, hidden_layer_size):
     print('\nScikit-learn Neural Network - Iris:')
     # Train a neural network classifier
-    clf = MLPClassifier()
+    clf = MLPClassifier(hidden_layer_sizes=tuple([hidden_layer_size for _ in range(num_layers)]),
+                        activation='logistic',
+                        solver='sgd',
+                        batch_size='auto',
+                        max_iter=2000)
     clf.fit(iris_train, iris_train_labels)
 
     # Make predictions on the test set and show results
@@ -69,10 +77,14 @@ def test_scikit_dt_wine():
     y_pred = clf.predict(wine_test)
     show_scikit_results(WINE, y_pred)
 
-def test_scikit_nn_wine():
+def test_scikit_nn_wine(num_layers, hidden_layer_size):
     print('\nScikit-learn Neural Network - Wine:')
     # Train a neural network classifier
-    clf = MLPClassifier()
+    clf = MLPClassifier(hidden_layer_sizes=tuple([hidden_layer_size for _ in range(num_layers)]),
+                        activation='logistic',
+                        solver='sgd',
+                        batch_size='auto',
+                        max_iter=2000)
     clf.fit(wine_train, wine_train_labels)
 
     # Make predictions on the test set and show results
@@ -89,12 +101,16 @@ def test_scikit_dt_abalone():
     y_pred = clf.predict(abalone_test)
     show_scikit_results(ABALONE, y_pred)
 
-def test_scikit_nn_abalone():
+def test_scikit_nn_abalone(num_layers, hidden_layer_size):
     print('\nScikit-learn Neural Network - Abalone:')
     # Train a neural network classifier
-    clf = MLPClassifier()
-    clf.fit(abalone_train, abalone_train_labels)
+    clf = MLPClassifier(hidden_layer_sizes=tuple([hidden_layer_size for _ in range(num_layers)]),
+                        activation='logistic',
+                        solver='sgd',
+                        batch_size='auto',
+                        max_iter=2000)
+    clf.fit(abalone_train_one_hot, abalone_train_labels_one_hot)
 
     # Make predictions on the test set and show results
-    y_pred = clf.predict(abalone_test)
-    show_scikit_results(ABALONE, y_pred)
+    y_pred = clf.predict(abalone_test_one_hot)
+    show_scikit_results(ABALONE_ONE_HOT, y_pred)

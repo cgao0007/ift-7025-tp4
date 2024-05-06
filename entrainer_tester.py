@@ -46,7 +46,9 @@ TEST_NEURAL_NET = False
 LEARNING_CURVE = False
 PRUNING = False
 NEURAL_NET_HIDDEN_SIZE_SEARCH = False
-NEURAL_NET_NUM_LAYERS_SEARCH = True
+NEURAL_NET_NUM_LAYERS_SEARCH = False
+TEST_OPTIMAL_NEURAL_NET = True
+TEST_ALL_CLASSIFIERS = False
 
 #########################################################
 # 1 - Initialiser votre classifieur avec ses paramètres #
@@ -88,6 +90,11 @@ LAYER_SIZES_FOUND_BY_SEARCH = {
     ABALONE: 50,
     IRIS: 50,
     WINE: 100
+}
+NUM_LAYERS_FOUND_BY_SEARCH = {
+    ABALONE: 1,
+    IRIS: 1,
+    WINE: 1
 }
 
 # Classifiers - Decision Trees
@@ -198,19 +205,14 @@ def main():
         test_dt_iris()
         test_dt_wine()
         test_dt_abalone()
+        test_scikit_dt_iris()
+        test_scikit_dt_wine()
+        test_scikit_dt_abalone()
 
     if TEST_NEURAL_NET:
         test_nn_wine()
         test_nn_iris()
         test_nn_abalone()
-
-    # Scikit Classifiers
-    # test_scikit_dt_iris()
-    # test_scikit_dt_wine()
-    # test_scikit_dt_abalone()
-    # test_scikit_nn_iris()
-    # test_scikit_nn_wine()
-    # test_scikit_nn_abalone()
 
     # Pruning
     if PRUNING:
@@ -255,6 +257,19 @@ def main():
         plt.ylabel("Erreur en validation croisée à 10 plis")
         plt.legend()
         plt.show()
+
+    if TEST_OPTIMAL_NEURAL_NET:
+        test_scikit_nn_iris(NUM_LAYERS_FOUND_BY_SEARCH[IRIS], LAYER_SIZES_FOUND_BY_SEARCH[IRIS])
+        test_scikit_nn_wine(NUM_LAYERS_FOUND_BY_SEARCH[WINE], LAYER_SIZES_FOUND_BY_SEARCH[WINE])
+        test_scikit_nn_abalone(NUM_LAYERS_FOUND_BY_SEARCH[ABALONE], LAYER_SIZES_FOUND_BY_SEARCH[ABALONE])
+
+    # Scikit Classifiers
+    # test_scikit_dt_iris()
+    # test_scikit_dt_wine()
+    # test_scikit_dt_abalone()
+    # test_scikit_nn_iris()
+    # test_scikit_nn_wine()
+    # test_scikit_nn_abalone()
 
 
 if __name__ == '__main__':
